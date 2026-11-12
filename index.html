@@ -44,10 +44,16 @@ li{padding:.9rem 0;border-bottom:1px solid var(--line)}
 .gw{display:flex;flex-direction:column;align-items:center;text-align:center}
 .gar{font-size:1.5rem;line-height:1.7}
 .gen{font-size:.8rem;color:var(--mute);line-height:1.2;max-width:7rem}
+.tog{display:flex;align-items:center;gap:.6rem;min-height:44px;margin-bottom:.5rem;color:var(--mute);cursor:pointer}
+.tog[hidden]{display:none}
+.tog input{width:1.3rem;height:1.3rem;accent-color:var(--root)}
+.hide-gloss .gen{display:none}
+.ex-en{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--line)}
 </style></head><body><main>
 <h1>Arabic by root</h1>
 <p class="sub">Most Arabic words grow from a root of three letters. Learn the root and you can recognise a whole family of words. The root letters are green in every word.</p>
 <nav id="nav"></nav>
+<label class="tog" id="tog"><input type="checkbox" id="glossTog" checked> Show word-by-word translation</label>
 <div id="sections"><p class="msg">Loading words…</p></div>
 <section id="quiz" hidden>
   <p>Which root does this word come from?</p>
@@ -162,6 +168,7 @@ function render(){
 function show(id){
   document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));
   document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!==id);
+  document.getElementById("tog").hidden=id==="quiz";
   if(id==="quiz"&&!document.getElementById("qw").textContent) ask();
 }
 
@@ -188,6 +195,16 @@ function answer(btn,c,box){
   document.getElementById("next").hidden=false;
 }
 document.getElementById("next").onclick=ask;
+
+(function(){
+  const cb=document.getElementById("glossTog"); let on=true;
+  try{ on=localStorage.getItem("gloss")!=="off"; }catch(e){}
+  cb.checked=on; document.body.classList.toggle("hide-gloss",!on);
+  cb.onchange=()=>{
+    document.body.classList.toggle("hide-gloss",!cb.checked);
+    try{ localStorage.setItem("gloss",cb.checked?"on":"off"); }catch(e){}
+  };
+})();
 
 (async function(){
   try{
