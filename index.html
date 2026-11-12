@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arabic by root</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Hanken+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF2F3;--ink:#12222E;--mute:#5B6B76;--root:#0B6E63;--line:#CBD6DA;--panel:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Hanken Grotesk",system-ui,sans-serif}
+main{max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem}
+h1{font-size:1.6rem;margin:0 0 .25rem}
+.sub{color:var(--mute);margin:0 0 1.5rem;max-width:36rem}
+nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+nav button{font:600 1.25rem/1 Amiri,serif;padding:.6rem 1rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:.5rem;cursor:pointer}
+nav button[aria-selected=true]{background:var(--root);color:#fff;border-color:var(--root)}
+nav button.q{font:600 1rem/1 "Hanken Grotesk",sans-serif}
+button:focus-visible{outline:3px solid #E0A100;outline-offset:2px}
+.root{font:700 clamp(3.5rem,14vw,6rem)/1.3 Amiri,serif;color:var(--root);letter-spacing:.05em}
+.rm{margin:0 0 1.25rem;color:var(--mute)}
+ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+li{display:grid;grid-template-columns:9rem 1fr;gap:0 1rem;padding:.8rem 0;border-bottom:1px solid var(--line);align-items:baseline}
+.ar{font:400 2.1rem/1.5 Amiri,serif;text-align:right}
+.r{color:var(--root);font-weight:700}
+.tr{font-style:italic}
+.en{grid-column:2}.kind{grid-column:2;color:var(--mute);font-size:.9rem}
+.tr,.en,.kind{grid-column:2}
+.qw{font:400 3.2rem/1.5 Amiri,serif;margin:.5rem 0}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;max-width:24rem}
+.opts button{font:700 1.7rem/1 Amiri,serif;padding:1rem;border:1px solid var(--line);background:var(--panel);border-radius:.5rem;cursor:pointer}
+.opts button.ok{background:var(--root);color:#fff}.opts button.no{background:#B3261E;color:#fff}
+.fb{min-height:3rem;margin:1rem 0}
+.next{font:600 1rem "Hanken Grotesk",sans-serif;padding:.6rem 1.2rem;border-radius:.5rem;border:0;background:var(--ink);color:#fff;cursor:pointer}
+
+.msg{padding:1rem;border:1px solid var(--line);background:var(--panel);border-radius:.5rem}
+</style></head><body><main>
+<h1>Arabic by root</h1>
+<p class="sub">Most Arabic words grow from a root of three letters. Learn the root and you can recognise a whole family of words. The root letters are green in every word.</p>
+<nav id="nav"></nav>
+<div id="sections"><p class="msg">Loading words…</p></div>
+<section id="quiz" hidden>
+  <p>Which root does this word come from?</p>
+  <div class="qw" id="qw" lang="ar" dir="rtl"></div>
+  <div class="opts" id="opts"></div>
+  <div class="fb" id="fb" aria-live="polite"></div>
+  <button class="next" id="next" hidden>Next word</button>
+  <p id="score" class="rm"></p>
+</section>
+</main>
+<script>
+// ===== SETTINGS: paste your published Google Sheet CSV link between the quotes =====
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTUestG9fMXCBO2qjxhO99ali0Yjs3uQVm0M7BXt4DzTqNOSt83mo6Cd3s8RrlDiNzV8ecnC2ZWVK33/pub?output=csv";
+// Leave it empty to see the built-in sample words.
+// ===================================================================================
+
+const SAMPLE_CSV = `root,root_meaning,word,transliteration,meaning,type
+ك-ت-ب,writing,كَتَبَ,kataba,he wrote,verb
+ك-ت-ب,writing,كِتَاب,kitāb,book,noun
+ك-ت-ب,writing,كَاتِب,kātib,writer,doer
+ك-ت-ب,writing,مَكْتَب,maktab,"office, desk",place
+ك-ت-ب,writing,مَكْتَبَة,maktaba,"library, bookshop",place
+ك-ت-ب,writing,مَكْتُوب,maktūb,written; letter,result
+د-ر-س,studying,دَرَسَ,darasa,he studied,verb
+د-ر-س,studying,دَرْس,dars,lesson,noun
+د-ر-س,studying,دِرَاسَة,dirāsa,study,noun
+د-ر-س,studying,مَدْرَسَة,madrasa,school,place
+د-ر-س,studying,مُدَرِّس,mudarris,teacher,doer
+ع-ل-م,knowing,عَلِمَ,ʿalima,he knew,verb
+ع-ل-م,knowing,عِلْم,ʿilm,"knowledge, science",noun
+ع-ل-م,knowing,عَالِم,ʿālim,"scholar, scientist",doer
+ع-ل-م,knowing,مُعَلِّم,muʿallim,teacher,doer
+ع-ل-م,knowing,تَعْلِيم,taʿlīm,education,noun
+ع-ل-م,knowing,مَعْلُومَات,maʿlūmāt,information,noun
+ف-ت-ح,opening,فَتَحَ,fataḥa,he opened,verb
+ف-ت-ح,opening,فَتْح,fatḥ,opening; conquest,noun
+ف-ت-ح,opening,فَاتِح,fātiḥ,opener; light (colour),doer
+ف-ت-ح,opening,مِفْتَاح,miftāḥ,key,tool
+ف-ت-ح,opening,مَفْتُوح,maftūḥ,open,result
+خ-ر-ج,going out,خَرَجَ,kharaja,he went out,verb
+خ-ر-ج,going out,خُرُوج,khurūj,"exit, departure",noun
+خ-ر-ج,going out,خَارِج,khārij,outside,doer
+خ-ر-ج,going out,مَخْرَج,makhraj,"exit, way out",place
+خ-ر-ج,going out,إِخْرَاج,ikhrāj,taking out; directing (film),noun
+`;
+const DIAC = /[\u064B-\u0652]/;
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function parseCSV(text){
+  const rows=[]; let row=[], cell="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else q=false; } else cell+=c; }
+    else if(c==='"') q=true;
+    else if(c===","){ row.push(cell); cell=""; }
+    else if(c==="\n"||c==="\r"){ if(c==="\r"&&text[i+1]==="\n") i++; row.push(cell); rows.push(row); row=[]; cell=""; }
+    else cell+=c;
+  }
+  if(cell!==""||row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r=>r.some(x=>x.trim()));
+}
+
+function toRoots(rows){
+  const head=rows[0].map(h=>h.trim().toLowerCase());
+  const col=n=>head.indexOf(n);
+  const need=["root","word","meaning"];
+  const missing=need.filter(n=>col(n)<0);
+  if(missing.length) throw new Error("Missing column(s): "+missing.join(", ")+". Row 1 must be: root, root_meaning, word, transliteration, meaning, type.");
+  const map=new Map();
+  rows.slice(1).forEach(r=>{
+    const get=n=>col(n)<0?"":(r[col(n)]||"").trim();
+    const letters=Array.from(get("root")).filter(c=>/[\u0621-\u064A]/.test(c));
+    if(!letters.length||!get("word")) return;
+    const key=letters.join("-");
+    if(!map.has(key)) map.set(key,{letters,meaning:get("root_meaning"),words:[]});
+    const root=map.get(key);
+    if(!root.meaning) root.meaning=get("root_meaning");
+    root.words.push({ar:get("word"),tr:get("transliteration"),en:get("meaning"),kind:get("type")});
+  });
+  return [...map.values()];
+}
+
+function highlight(word,letters){
+  const clusters=[];
+  for(const ch of word){ if(DIAC.test(ch)&&clusters.length) clusters[clusters.length-1]+=ch; else clusters.push(ch); }
+  let i=0;
+  return clusters.map(c=>{
+    if(i<letters.length&&c[0]===letters[i]){ i++; return `<span class="r">${esc(c)}</span>`; }
+    return esc(c);
+  }).join("");
+}
+
+let ROOTS=[];
+const label=r=>r.letters.join("-");
+
+function render(){
+  const nav=document.getElementById("nav");
+  nav.innerHTML=ROOTS.map((r,n)=>`<button data-tab="r${n}" lang="ar">${label(r)}</button>`).join("")+`<button class="q" data-tab="quiz">Quiz</button>`;
+  const html=ROOTS.map((r,n)=>`<section id="r${n}" hidden><div class="root" lang="ar" dir="ltr">${label(r)}</div>`+
+    (r.meaning?`<p class="rm">the idea of <em>${esc(r.meaning)}</em></p>`:"")+
+    `<ul>`+r.words.map(w=>`<li><span class="ar" lang="ar" dir="rtl">${highlight(w.ar,r.letters)}</span><span class="tr">${esc(w.tr)}</span><span class="en">${esc(w.en)}</span><span class="kind">${esc(w.kind)}</span></li>`).join("")+`</ul></section>`).join("");
+  document.getElementById("sections").innerHTML=html;
+  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
+  show("r0");
+}
+function show(id){
+  document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));
+  document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!==id);
+  if(id==="quiz"&&!document.getElementById("qw").textContent) ask();
+}
+
+let right=0,total=0,cur;
+function ask(){
+  if(ROOTS.length<4){ document.getElementById("qw").textContent=""; document.getElementById("fb").textContent="Add at least 4 roots to your sheet to use the quiz."; return; }
+  const r=ROOTS[Math.floor(Math.random()*ROOTS.length)];
+  const w=r.words[Math.floor(Math.random()*r.words.length)];
+  const others=ROOTS.filter(x=>x!==r).sort(()=>Math.random()-.5).slice(0,3);
+  const choices=[r,...others].sort(()=>Math.random()-.5);
+  cur={r,w};
+  document.getElementById("qw").textContent=w.ar;
+  document.getElementById("fb").textContent="";
+  document.getElementById("next").hidden=true;
+  const box=document.getElementById("opts"); box.innerHTML="";
+  choices.forEach(c=>{ const b=document.createElement("button"); b.textContent=label(c); b.lang="ar"; b.dir="ltr"; b.onclick=()=>answer(b,c,box); box.appendChild(b); });
+}
+function answer(btn,c,box){
+  total++; const ok=c===cur.r; if(ok) right++;
+  [...box.children].forEach(x=>{x.disabled=true; if(x.textContent===label(cur.r)) x.classList.add("ok");});
+  if(!ok) btn.classList.add("no");
+  document.getElementById("fb").textContent=(ok?"Correct. ":"Not quite. ")+cur.w.tr+" means \u201c"+cur.w.en+"\u201d and comes from "+label(cur.r)+(cur.r.meaning?" ("+cur.r.meaning+")":"")+".";
+  document.getElementById("score").textContent="Score: "+right+" / "+total;
+  document.getElementById("next").hidden=false;
+}
+document.getElementById("next").onclick=ask;
+
+(async function(){
+  try{
+    let text=SAMPLE_CSV;
+    if(SHEET_CSV_URL.trim()){
+      const res=await fetch(SHEET_CSV_URL.trim());
+      if(!res.ok) throw new Error("Could not load the sheet (HTTP "+res.status+"). Check that it is published to the web as CSV.");
+      text=await res.text();
+    }
+    ROOTS=toRoots(parseCSV(text));
+    if(!ROOTS.length) throw new Error("The sheet has no usable rows.");
+    render();
+  }catch(e){
+    document.getElementById("sections").innerHTML=`<p class="msg">${esc(e.message)}</p>`;
+  }
+})();
+</script></body></html>
