@@ -13,7 +13,7 @@ main{max-width:46rem;margin:0 auto;padding:1.25rem max(1rem,env(safe-area-inset-
 h1{font-size:1.5rem;margin:0 0 .25rem}
 .sub{color:var(--mute);margin:0 0 1.25rem;max-width:36rem}
 /* Arabic text: never use letter-spacing or bold on Arabic, both break letter joining */
-.ar,.root,.qw,.ex-ar,nav button,.opts button{font-family:Amiri,"Noto Naskh Arabic","Geeza Pro","Droid Arabic Naskh","Traditional Arabic",serif;letter-spacing:0;font-weight:400}
+.ar,.root,.qw,.ex-ar,.gar,nav button,.opts button{font-family:Amiri,"Noto Naskh Arabic","Geeza Pro","Droid Arabic Naskh","Traditional Arabic",serif;letter-spacing:0;font-weight:400}
 nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
 nav button{font-size:1.3rem;line-height:1;min-width:44px;min-height:44px;padding:.6rem 1rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:.5rem;cursor:pointer}
 nav button[aria-selected=true]{background:var(--root);color:#fff;border-color:var(--root)}
@@ -40,6 +40,10 @@ li{padding:.9rem 0;border-bottom:1px solid var(--line)}
 .next{font:600 1rem "Hanken Grotesk",sans-serif;min-height:44px;padding:.6rem 1.2rem;border-radius:.5rem;border:0;background:var(--ink);color:#fff;cursor:pointer}
 .msg{padding:1rem;border:1px solid var(--line);background:var(--panel);border-radius:.5rem}
 @media (max-width:420px){body{font-size:16px}.ar{font-size:2.1rem}.qw{font-size:2.8rem}}
+.gl{display:flex;flex-wrap:wrap;gap:.4rem 1rem;direction:rtl}
+.gw{display:flex;flex-direction:column;align-items:center;text-align:center}
+.gar{font-size:1.5rem;line-height:1.7}
+.gen{font-size:.8rem;color:var(--mute);line-height:1.2;max-width:7rem}
 </style></head><body><main>
 <h1>Arabic by root</h1>
 <p class="sub">Most Arabic words grow from a root of three letters. Learn the root and you can recognise a whole family of words. The root letters are green in every word.</p>
@@ -60,34 +64,34 @@ const SHEET_CSV_URL = "";
 // Leave it empty to see the built-in sample words.
 // ===================================================================================
 
-const SAMPLE_CSV = `root,root_meaning,word,transliteration,meaning,type,example_ar,example_en
-ك-ت-ب,writing,كَتَبَ,kataba,he wrote,verb,كَتَبَ الطَّالِبُ الرِّسَالَةَ.,The student wrote the letter.
-ك-ت-ب,writing,كِتَاب,kitāb,book,noun,هَذَا كِتَابٌ جَمِيلٌ.,This is a beautiful book.
-ك-ت-ب,writing,كَاتِب,kātib,writer,doer,أَبِي كَاتِبٌ مَشْهُورٌ.,My father is a famous writer.
-ك-ت-ب,writing,مَكْتَب,maktab,"office, desk",place,الْقَلَمُ عَلَى الْمَكْتَبِ.,The pen is on the desk.
-ك-ت-ب,writing,مَكْتَبَة,maktaba,"library, bookshop",place,أَذْهَبُ إِلَى الْمَكْتَبَةِ كُلَّ يَوْمٍ.,I go to the library every day.
-ك-ت-ب,writing,مَكْتُوب,maktūb,written; letter,result,الِاسْمُ مَكْتُوبٌ عَلَى الْوَرَقَةِ.,The name is written on the paper.
-د-ر-س,studying,دَرَسَ,darasa,he studied,verb,دَرَسَ أَحْمَدُ لِلِامْتِحَانِ.,Ahmad studied for the exam.
-د-ر-س,studying,دَرْس,dars,lesson,noun,الدَّرْسُ الْيَوْمَ سَهْلٌ.,Today's lesson is easy.
-د-ر-س,studying,دِرَاسَة,dirāsa,study,noun,دِرَاسَةُ اللُّغَةِ مُمْتِعَةٌ.,Studying language is enjoyable.
-د-ر-س,studying,مَدْرَسَة,madrasa,school,place,ذَهَبَ الْوَلَدُ إِلَى الْمَدْرَسَةِ.,The boy went to school.
-د-ر-س,studying,مُدَرِّس,mudarris,teacher,doer,الْمُدَرِّسُ يَشْرَحُ الدَّرْسَ.,The teacher explains the lesson.
-ع-ل-م,knowing,عَلِمَ,ʿalima,he knew,verb,عَلِمْتُ الْخَبَرَ أَمْسِ.,I learned the news yesterday.
-ع-ل-م,knowing,عِلْم,ʿilm,"knowledge, science",noun,الْعِلْمُ نُورٌ.,Knowledge is light.
-ع-ل-م,knowing,عَالِم,ʿālim,"scholar, scientist",doer,هُوَ عَالِمٌ كَبِيرٌ فِي الْفِيزِيَاءِ.,He is a great scientist in physics.
-ع-ل-م,knowing,مُعَلِّم,muʿallim,teacher,doer,مُعَلِّمُنَا لَطِيفٌ.,Our teacher is kind.
-ع-ل-م,knowing,تَعْلِيم,taʿlīm,education,noun,التَّعْلِيمُ مُهِمٌّ لِكُلِّ طِفْلٍ.,Education is important for every child.
-ع-ل-م,knowing,مَعْلُومَات,maʿlūmāt,information,noun,أَبْحَثُ عَنْ مَعْلُومَاتٍ جَدِيدَةٍ.,I am looking for new information.
-ف-ت-ح,opening,فَتَحَ,fataḥa,he opened,verb,فَتَحَ الرَّجُلُ الْبَابَ.,The man opened the door.
-ف-ت-ح,opening,فَتْح,fatḥ,opening; conquest,noun,فَتْحُ الْمَتْجَرِ فِي الصَّبَاحِ.,The shop opens in the morning.
-ف-ت-ح,opening,فَاتِح,fātiḥ,opener; light (colour),doer,لَوْنُ الْقَمِيصِ فَاتِحٌ.,The shirt's colour is light.
-ف-ت-ح,opening,مِفْتَاح,miftāḥ,key,tool,أَيْنَ مِفْتَاحُ السَّيَّارَةِ؟,Where is the car key?
-ف-ت-ح,opening,مَفْتُوح,maftūḥ,open,result,الْبَابُ مَفْتُوحٌ.,The door is open.
-خ-ر-ج,going out,خَرَجَ,kharaja,he went out,verb,خَرَجَ أَخِي مِنَ الْبَيْتِ.,My brother left the house.
-خ-ر-ج,going out,خُرُوج,khurūj,"exit, departure",noun,وَقْتُ الْخُرُوجِ الْآنَ.,It is time to leave now.
-خ-ر-ج,going out,خَارِج,khārij,outside,doer,هُمْ يَلْعَبُونَ خَارِجَ الْبَيْتِ.,They are playing outside the house.
-خ-ر-ج,going out,مَخْرَج,makhraj,"exit, way out",place,أَيْنَ الْمَخْرَجُ؟,Where is the exit?
-خ-ر-ج,going out,إِخْرَاج,ikhrāj,taking out; directing (film),noun,إِخْرَاجُ هَذَا الْفِيلْمِ مُمْتَازٌ.,The direction of this film is excellent.
+const SAMPLE_CSV = `root,root_meaning,word,transliteration,meaning,type,example_ar,example_en,example_words
+ك-ت-ب,writing,كَتَبَ,kataba,he wrote,verb,كَتَبَ الطَّالِبُ الرِّسَالَةَ.,The student wrote the letter.,كَتَبَ=wrote | الطَّالِبُ=the student | الرِّسَالَةَ=the letter
+ك-ت-ب,writing,كِتَاب,kitāb,book,noun,هَذَا كِتَابٌ جَمِيلٌ.,This is a beautiful book.,هَذَا=this is | كِتَابٌ=a book | جَمِيلٌ=beautiful
+ك-ت-ب,writing,كَاتِب,kātib,writer,doer,أَبِي كَاتِبٌ مَشْهُورٌ.,My father is a famous writer.,أَبِي=my father | كَاتِبٌ=a writer | مَشْهُورٌ=famous
+ك-ت-ب,writing,مَكْتَب,maktab,"office, desk",place,الْقَلَمُ عَلَى الْمَكْتَبِ.,The pen is on the desk.,الْقَلَمُ=the pen | عَلَى=on | الْمَكْتَبِ=the desk
+ك-ت-ب,writing,مَكْتَبَة,maktaba,"library, bookshop",place,أَذْهَبُ إِلَى الْمَكْتَبَةِ كُلَّ يَوْمٍ.,I go to the library every day.,أَذْهَبُ=I go | إِلَى=to | الْمَكْتَبَةِ=the library | كُلَّ يَوْمٍ=every day
+ك-ت-ب,writing,مَكْتُوب,maktūb,written; letter,result,الِاسْمُ مَكْتُوبٌ عَلَى الْوَرَقَةِ.,The name is written on the paper.,الِاسْمُ=the name | مَكْتُوبٌ=written | عَلَى=on | الْوَرَقَةِ=the paper
+د-ر-س,studying,دَرَسَ,darasa,he studied,verb,دَرَسَ أَحْمَدُ لِلِامْتِحَانِ.,Ahmad studied for the exam.,دَرَسَ=studied | أَحْمَدُ=Ahmad | لِلِامْتِحَانِ=for the exam
+د-ر-س,studying,دَرْس,dars,lesson,noun,الدَّرْسُ الْيَوْمَ سَهْلٌ.,Today's lesson is easy.,الدَّرْسُ=the lesson | الْيَوْمَ=today | سَهْلٌ=easy
+د-ر-س,studying,دِرَاسَة,dirāsa,study,noun,دِرَاسَةُ اللُّغَةِ مُمْتِعَةٌ.,Studying language is enjoyable.,دِرَاسَةُ=studying | اللُّغَةِ=language | مُمْتِعَةٌ=enjoyable
+د-ر-س,studying,مَدْرَسَة,madrasa,school,place,ذَهَبَ الْوَلَدُ إِلَى الْمَدْرَسَةِ.,The boy went to school.,ذَهَبَ=went | الْوَلَدُ=the boy | إِلَى=to | الْمَدْرَسَةِ=the school
+د-ر-س,studying,مُدَرِّس,mudarris,teacher,doer,الْمُدَرِّسُ يَشْرَحُ الدَّرْسَ.,The teacher explains the lesson.,الْمُدَرِّسُ=the teacher | يَشْرَحُ=explains | الدَّرْسَ=the lesson
+ع-ل-م,knowing,عَلِمَ,ʿalima,he knew,verb,عَلِمْتُ الْخَبَرَ أَمْسِ.,I learned the news yesterday.,عَلِمْتُ=I learned | الْخَبَرَ=the news | أَمْسِ=yesterday
+ع-ل-م,knowing,عِلْم,ʿilm,"knowledge, science",noun,الْعِلْمُ نُورٌ.,Knowledge is light.,الْعِلْمُ=knowledge | نُورٌ=light
+ع-ل-م,knowing,عَالِم,ʿālim,"scholar, scientist",doer,هُوَ عَالِمٌ كَبِيرٌ فِي الْفِيزِيَاءِ.,He is a great scientist in physics.,هُوَ=he is | عَالِمٌ=a scientist | كَبِيرٌ=great | فِي=in | الْفِيزِيَاءِ=physics
+ع-ل-م,knowing,مُعَلِّم,muʿallim,teacher,doer,مُعَلِّمُنَا لَطِيفٌ.,Our teacher is kind.,مُعَلِّمُنَا=our teacher | لَطِيفٌ=kind
+ع-ل-م,knowing,تَعْلِيم,taʿlīm,education,noun,التَّعْلِيمُ مُهِمٌّ لِكُلِّ طِفْلٍ.,Education is important for every child.,التَّعْلِيمُ=education | مُهِمٌّ=important | لِكُلِّ=for every | طِفْلٍ=child
+ع-ل-م,knowing,مَعْلُومَات,maʿlūmāt,information,noun,أَبْحَثُ عَنْ مَعْلُومَاتٍ جَدِيدَةٍ.,I am looking for new information.,أَبْحَثُ=I search | عَنْ=for | مَعْلُومَاتٍ=information | جَدِيدَةٍ=new
+ف-ت-ح,opening,فَتَحَ,fataḥa,he opened,verb,فَتَحَ الرَّجُلُ الْبَابَ.,The man opened the door.,فَتَحَ=opened | الرَّجُلُ=the man | الْبَابَ=the door
+ف-ت-ح,opening,فَتْح,fatḥ,opening; conquest,noun,فَتْحُ الْمَتْجَرِ فِي الصَّبَاحِ.,The shop opens in the morning.,فَتْحُ=opening of | الْمَتْجَرِ=the shop | فِي=in | الصَّبَاحِ=the morning
+ف-ت-ح,opening,فَاتِح,fātiḥ,opener; light (colour),doer,لَوْنُ الْقَمِيصِ فَاتِحٌ.,The shirt's colour is light.,لَوْنُ=colour of | الْقَمِيصِ=the shirt | فَاتِحٌ=light
+ف-ت-ح,opening,مِفْتَاح,miftāḥ,key,tool,أَيْنَ مِفْتَاحُ السَّيَّارَةِ؟,Where is the car key?,أَيْنَ=where | مِفْتَاحُ=key of | السَّيَّارَةِ=the car
+ف-ت-ح,opening,مَفْتُوح,maftūḥ,open,result,الْبَابُ مَفْتُوحٌ.,The door is open.,الْبَابُ=the door | مَفْتُوحٌ=open
+خ-ر-ج,going out,خَرَجَ,kharaja,he went out,verb,خَرَجَ أَخِي مِنَ الْبَيْتِ.,My brother left the house.,خَرَجَ=left | أَخِي=my brother | مِنَ=from | الْبَيْتِ=the house
+خ-ر-ج,going out,خُرُوج,khurūj,"exit, departure",noun,وَقْتُ الْخُرُوجِ الْآنَ.,It is time to leave now.,وَقْتُ=time of | الْخُرُوجِ=leaving | الْآنَ=now
+خ-ر-ج,going out,خَارِج,khārij,outside,doer,هُمْ يَلْعَبُونَ خَارِجَ الْبَيْتِ.,They are playing outside the house.,هُمْ=they | يَلْعَبُونَ=are playing | خَارِجَ=outside | الْبَيْتِ=the house
+خ-ر-ج,going out,مَخْرَج,makhraj,"exit, way out",place,أَيْنَ الْمَخْرَجُ؟,Where is the exit?,أَيْنَ=where | الْمَخْرَجُ=the exit
+خ-ر-ج,going out,إِخْرَاج,ikhrāj,taking out; directing (film),noun,إِخْرَاجُ هَذَا الْفِيلْمِ مُمْتَازٌ.,The direction of this film is excellent.,إِخْرَاجُ=directing | هَذَا=this | الْفِيلْمِ=film | مُمْتَازٌ=excellent
 `;
 const DIAC = /[\u064B-\u0652]/;
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -111,7 +115,7 @@ function toRoots(rows){
   const col=n=>head.indexOf(n);
   const need=["root","word","meaning"];
   const missing=need.filter(n=>col(n)<0);
-  if(missing.length) throw new Error("Missing column(s): "+missing.join(", ")+". Row 1 must be: root, root_meaning, word, transliteration, meaning, type, example_ar, example_en.");
+  if(missing.length) throw new Error("Missing column(s): "+missing.join(", ")+". Row 1 must be: root, root_meaning, word, transliteration, meaning, type, example_ar, example_en, example_words.");
   const map=new Map();
   rows.slice(1).forEach(r=>{
     const get=n=>col(n)<0?"":(r[col(n)]||"").trim();
@@ -121,9 +125,15 @@ function toRoots(rows){
     if(!map.has(key)) map.set(key,{letters,meaning:get("root_meaning"),words:[]});
     const root=map.get(key);
     if(!root.meaning) root.meaning=get("root_meaning");
-    root.words.push({ar:get("word"),tr:get("transliteration"),en:get("meaning"),kind:get("type"),exAr:get("example_ar"),exEn:get("example_en")});
+    root.words.push({ar:get("word"),tr:get("transliteration"),en:get("meaning"),kind:get("type"),exAr:get("example_ar"),exEn:get("example_en"),exWords:get("example_words")});
   });
   return [...map.values()];
+}
+
+function glossHtml(w){
+  const pairs=(w.exWords||"").split("|").map(p=>{const i=p.indexOf("=");return i<0?null:[p.slice(0,i).trim(),p.slice(i+1).trim()];}).filter(p=>p&&p[0]);
+  if(!pairs.length) return `<div class="ex-ar" lang="ar" dir="rtl">${esc(w.exAr)}</div>`;
+  return `<div class="gl" dir="rtl">`+pairs.map(p=>`<div class="gw"><span class="gar" lang="ar">${esc(p[0])}</span><span class="gen" dir="ltr">${esc(p[1])}</span></div>`).join("")+`</div>`;
 }
 
 function highlight(word,letters){
@@ -144,7 +154,7 @@ function render(){
   nav.innerHTML=ROOTS.map((r,n)=>`<button data-tab="r${n}" lang="ar">${label(r)}</button>`).join("")+`<button class="q" data-tab="quiz">Quiz</button>`;
   const html=ROOTS.map((r,n)=>`<section id="r${n}" hidden><div class="root" lang="ar" dir="ltr">${label(r)}</div>`+
     (r.meaning?`<p class="rm">the idea of <em>${esc(r.meaning)}</em></p>`:"")+
-    `<ul>`+r.words.map(w=>`<li><div class="top"><div class="meta"><span class="en">${esc(w.en)}</span><span class="tr">${esc(w.tr)}</span><span class="kind">${esc(w.kind)}</span></div><span class="ar" lang="ar" dir="rtl">${highlight(w.ar,r.letters)}</span></div>${w.exAr?`<div class="ex"><div class="ex-ar" lang="ar" dir="rtl">${esc(w.exAr)}</div>${w.exEn?`<div class="ex-en">${esc(w.exEn)}</div>`:""}</div>`:""}</li>`).join("")+`</ul></section>`).join("");
+    `<ul>`+r.words.map(w=>`<li><div class="top"><div class="meta"><span class="en">${esc(w.en)}</span><span class="tr">${esc(w.tr)}</span><span class="kind">${esc(w.kind)}</span></div><span class="ar" lang="ar" dir="rtl">${highlight(w.ar,r.letters)}</span></div>${w.exAr?`<div class="ex">${glossHtml(w)}${w.exEn?`<div class="ex-en">${esc(w.exEn)}</div>`:""}</div>`:""}</li>`).join("")+`</ul></section>`).join("");
   document.getElementById("sections").innerHTML=html;
   nav.querySelectorAll("button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
   show("r0");
