@@ -22,13 +22,13 @@ button:focus-visible{outline:3px solid #E0A100;outline-offset:2px}
 .root{font-size:clamp(3rem,13vw,5.5rem);line-height:1.3;color:var(--root)}
 .rm{margin:0 0 1.25rem;color:var(--mute)}
 ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-li{padding:.9rem 0;border-bottom:1px solid var(--line)}
+li{padding:.9rem 0 .9rem .8rem;border-bottom:1px solid var(--line);border-left:4px solid var(--kc,transparent)}
 .top{display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:center}
 .ar{font-size:2.3rem;line-height:1.6;text-align:right}
-.r{color:var(--root)}
+.r{color:var(--kc,var(--root))}
 .meta{display:flex;flex-direction:column;min-width:0}
 .tr{font-style:italic}.en{font-weight:600}
-.kind{color:var(--mute);font-size:.85rem}
+.kind{align-self:flex-start;display:inline-block;padding:.05rem .6rem;border:1px solid var(--kc,var(--line));border-radius:999px;color:var(--kc,var(--mute));font-size:.8rem;font-weight:600;margin-top:.15rem}
 .ex{margin-top:.5rem;padding:.6rem .8rem;background:var(--panel);border-radius:.5rem;border:1px solid var(--line)}
 .ex-ar{font-size:1.5rem;line-height:1.8;text-align:right}
 .ex-en{color:var(--mute);font-size:.95rem}
@@ -49,10 +49,17 @@ li{padding:.9rem 0;border-bottom:1px solid var(--line)}
 .tog input{width:1.3rem;height:1.3rem;accent-color:var(--root)}
 .hide-gloss .gen{display:none}
 .ex-en{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--line)}
+.k-verb{--kc:#C2410C}.k-noun{--kc:#1D4ED8}.k-doer{--kc:#7E22CE}
+.k-place{--kc:#0B6E63}.k-tool{--kc:#BE185D}.k-result{--kc:#3F6212}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+.legend[hidden]{display:none}
+.hide-gloss .gl{gap:.1rem .5rem}
+.hide-gloss .gar{line-height:1.8}
 </style></head><body><main>
 <h1>Arabic by root</h1>
-<p class="sub">Most Arabic words grow from a root of three letters. Learn the root and you can recognise a whole family of words. The root letters are green in every word.</p>
+<p class="sub">Most Arabic words grow from a root of three letters. Learn the root and you can recognise a whole family of words. The root letters are coloured in every word, and the colour shows the word type.</p>
 <nav id="nav"></nav>
+<div class="legend" id="legend"></div>
 <label class="tog" id="tog"><input type="checkbox" id="glossTog" checked> Show word-by-word translation</label>
 <div id="sections"><p class="msg">Loading words…</p></div>
 <section id="quiz" hidden>
@@ -154,14 +161,17 @@ function highlight(word,letters){
 
 let ROOTS=[];
 const label=r=>r.letters.join("-");
+const kc=t=>"k-"+(t||"").toLowerCase().replace(/[^a-z0-9]+/g,"-");
 
 function render(){
   const nav=document.getElementById("nav");
   nav.innerHTML=ROOTS.map((r,n)=>`<button data-tab="r${n}" lang="ar">${label(r)}</button>`).join("")+`<button class="q" data-tab="quiz">Quiz</button>`;
   const html=ROOTS.map((r,n)=>`<section id="r${n}" hidden><div class="root" lang="ar" dir="ltr">${label(r)}</div>`+
     (r.meaning?`<p class="rm">the idea of <em>${esc(r.meaning)}</em></p>`:"")+
-    `<ul>`+r.words.map(w=>`<li><div class="top"><div class="meta"><span class="en">${esc(w.en)}</span><span class="tr">${esc(w.tr)}</span><span class="kind">${esc(w.kind)}</span></div><span class="ar" lang="ar" dir="rtl">${highlight(w.ar,r.letters)}</span></div>${w.exAr?`<div class="ex">${glossHtml(w)}${w.exEn?`<div class="ex-en">${esc(w.exEn)}</div>`:""}</div>`:""}</li>`).join("")+`</ul></section>`).join("");
+    `<ul>`+r.words.map(w=>`<li class="${kc(w.kind)}"><div class="top"><div class="meta"><span class="en">${esc(w.en)}</span><span class="tr">${esc(w.tr)}</span><span class="kind">${esc(w.kind)}</span></div><span class="ar" lang="ar" dir="rtl">${highlight(w.ar,r.letters)}</span></div>${w.exAr?`<div class="ex">${glossHtml(w)}${w.exEn?`<div class="ex-en">${esc(w.exEn)}</div>`:""}</div>`:""}</li>`).join("")+`</ul></section>`).join("");
   document.getElementById("sections").innerHTML=html;
+  const kinds=[...new Set(ROOTS.flatMap(r=>r.words.map(w=>w.kind)).filter(Boolean))];
+  document.getElementById("legend").innerHTML=kinds.map(k=>`<span class="kind ${kc(k)}">${esc(k)}</span>`).join("");
   nav.querySelectorAll("button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
   show("r0");
 }
@@ -169,6 +179,7 @@ function show(id){
   document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));
   document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!==id);
   document.getElementById("tog").hidden=id==="quiz";
+  document.getElementById("legend").hidden=id==="quiz";
   if(id==="quiz"&&!document.getElementById("qw").textContent) ask();
 }
 
