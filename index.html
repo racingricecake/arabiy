@@ -7,32 +7,39 @@
 <style>
 :root{--bg:#EDF2F3;--ink:#12222E;--mute:#5B6B76;--root:#0B6E63;--line:#CBD6DA;--panel:#fff}
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Hanken Grotesk",system-ui,sans-serif}
-main{max-width:46rem;margin:0 auto;padding:2rem 1.25rem 4rem}
-h1{font-size:1.6rem;margin:0 0 .25rem}
-.sub{color:var(--mute);margin:0 0 1.5rem;max-width:36rem}
-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
-nav button{font:600 1.25rem/1 Amiri,serif;padding:.6rem 1rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:.5rem;cursor:pointer}
+main{max-width:46rem;margin:0 auto;padding:1.25rem max(1rem,env(safe-area-inset-right)) 4rem max(1rem,env(safe-area-inset-left))}
+h1{font-size:1.5rem;margin:0 0 .25rem}
+.sub{color:var(--mute);margin:0 0 1.25rem;max-width:36rem}
+/* Arabic text: never use letter-spacing or bold on Arabic, both break letter joining */
+.ar,.root,.qw,.ex-ar,nav button,.opts button{font-family:Amiri,"Noto Naskh Arabic","Geeza Pro","Droid Arabic Naskh","Traditional Arabic",serif;letter-spacing:0;font-weight:400}
+nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+nav button{font-size:1.3rem;line-height:1;min-width:44px;min-height:44px;padding:.6rem 1rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:.5rem;cursor:pointer}
 nav button[aria-selected=true]{background:var(--root);color:#fff;border-color:var(--root)}
 nav button.q{font:600 1rem/1 "Hanken Grotesk",sans-serif}
 button:focus-visible{outline:3px solid #E0A100;outline-offset:2px}
-.root{font:700 clamp(3.5rem,14vw,6rem)/1.3 Amiri,serif;color:var(--root);letter-spacing:.05em}
+.root{font-size:clamp(3rem,13vw,5.5rem);line-height:1.3;color:var(--root)}
 .rm{margin:0 0 1.25rem;color:var(--mute)}
 ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-li{display:grid;grid-template-columns:9rem 1fr;gap:0 1rem;padding:.8rem 0;border-bottom:1px solid var(--line);align-items:baseline}
-.ar{font:400 2.1rem/1.5 Amiri,serif;text-align:right}
-.r{color:var(--root);font-weight:700}
-.tr{font-style:italic}
-.en{grid-column:2}.kind{grid-column:2;color:var(--mute);font-size:.9rem}
-.tr,.en,.kind{grid-column:2}
-.qw{font:400 3.2rem/1.5 Amiri,serif;margin:.5rem 0}
+li{padding:.9rem 0;border-bottom:1px solid var(--line)}
+.top{display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:center}
+.ar{font-size:2.3rem;line-height:1.6;text-align:right}
+.r{color:var(--root)}
+.meta{display:flex;flex-direction:column;min-width:0}
+.tr{font-style:italic}.en{font-weight:600}
+.kind{color:var(--mute);font-size:.85rem}
+.ex{margin-top:.5rem;padding:.6rem .8rem;background:var(--panel);border-radius:.5rem;border:1px solid var(--line)}
+.ex-ar{font-size:1.5rem;line-height:1.8;text-align:right}
+.ex-en{color:var(--mute);font-size:.95rem}
+.qw{font-size:3.2rem;line-height:1.5;margin:.5rem 0}
 .opts{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;max-width:24rem}
-.opts button{font:700 1.7rem/1 Amiri,serif;padding:1rem;border:1px solid var(--line);background:var(--panel);border-radius:.5rem;cursor:pointer}
+.opts button{font-size:1.6rem;line-height:1;min-height:56px;padding:1rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:.5rem;cursor:pointer}
 .opts button.ok{background:var(--root);color:#fff}.opts button.no{background:#B3261E;color:#fff}
 .fb{min-height:3rem;margin:1rem 0}
-.next{font:600 1rem "Hanken Grotesk",sans-serif;padding:.6rem 1.2rem;border-radius:.5rem;border:0;background:var(--ink);color:#fff;cursor:pointer}
-
+.next{font:600 1rem "Hanken Grotesk",sans-serif;min-height:44px;padding:.6rem 1.2rem;border-radius:.5rem;border:0;background:var(--ink);color:#fff;cursor:pointer}
 .msg{padding:1rem;border:1px solid var(--line);background:var(--panel);border-radius:.5rem}
+@media (max-width:420px){body{font-size:16px}.ar{font-size:2.1rem}.qw{font-size:2.8rem}}
 </style></head><body><main>
 <h1>Arabic by root</h1>
 <p class="sub">Most Arabic words grow from a root of three letters. Learn the root and you can recognise a whole family of words. The root letters are green in every word.</p>
@@ -49,38 +56,38 @@ li{display:grid;grid-template-columns:9rem 1fr;gap:0 1rem;padding:.8rem 0;border
 </main>
 <script>
 // ===== SETTINGS: paste your published Google Sheet CSV link between the quotes =====
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTUestG9fMXCBO2qjxhO99ali0Yjs3uQVm0M7BXt4DzTqNOSt83mo6Cd3s8RrlDiNzV8ecnC2ZWVK33/pub?output=csv";
+const SHEET_CSV_URL = "";
 // Leave it empty to see the built-in sample words.
 // ===================================================================================
 
-const SAMPLE_CSV = `root,root_meaning,word,transliteration,meaning,type
-ك-ت-ب,writing,كَتَبَ,kataba,he wrote,verb
-ك-ت-ب,writing,كِتَاب,kitāb,book,noun
-ك-ت-ب,writing,كَاتِب,kātib,writer,doer
-ك-ت-ب,writing,مَكْتَب,maktab,"office, desk",place
-ك-ت-ب,writing,مَكْتَبَة,maktaba,"library, bookshop",place
-ك-ت-ب,writing,مَكْتُوب,maktūb,written; letter,result
-د-ر-س,studying,دَرَسَ,darasa,he studied,verb
-د-ر-س,studying,دَرْس,dars,lesson,noun
-د-ر-س,studying,دِرَاسَة,dirāsa,study,noun
-د-ر-س,studying,مَدْرَسَة,madrasa,school,place
-د-ر-س,studying,مُدَرِّس,mudarris,teacher,doer
-ع-ل-م,knowing,عَلِمَ,ʿalima,he knew,verb
-ع-ل-م,knowing,عِلْم,ʿilm,"knowledge, science",noun
-ع-ل-م,knowing,عَالِم,ʿālim,"scholar, scientist",doer
-ع-ل-م,knowing,مُعَلِّم,muʿallim,teacher,doer
-ع-ل-م,knowing,تَعْلِيم,taʿlīm,education,noun
-ع-ل-م,knowing,مَعْلُومَات,maʿlūmāt,information,noun
-ف-ت-ح,opening,فَتَحَ,fataḥa,he opened,verb
-ف-ت-ح,opening,فَتْح,fatḥ,opening; conquest,noun
-ف-ت-ح,opening,فَاتِح,fātiḥ,opener; light (colour),doer
-ف-ت-ح,opening,مِفْتَاح,miftāḥ,key,tool
-ف-ت-ح,opening,مَفْتُوح,maftūḥ,open,result
-خ-ر-ج,going out,خَرَجَ,kharaja,he went out,verb
-خ-ر-ج,going out,خُرُوج,khurūj,"exit, departure",noun
-خ-ر-ج,going out,خَارِج,khārij,outside,doer
-خ-ر-ج,going out,مَخْرَج,makhraj,"exit, way out",place
-خ-ر-ج,going out,إِخْرَاج,ikhrāj,taking out; directing (film),noun
+const SAMPLE_CSV = `root,root_meaning,word,transliteration,meaning,type,example_ar,example_en
+ك-ت-ب,writing,كَتَبَ,kataba,he wrote,verb,كَتَبَ الطَّالِبُ الرِّسَالَةَ.,The student wrote the letter.
+ك-ت-ب,writing,كِتَاب,kitāb,book,noun,هَذَا كِتَابٌ جَمِيلٌ.,This is a beautiful book.
+ك-ت-ب,writing,كَاتِب,kātib,writer,doer,أَبِي كَاتِبٌ مَشْهُورٌ.,My father is a famous writer.
+ك-ت-ب,writing,مَكْتَب,maktab,"office, desk",place,الْقَلَمُ عَلَى الْمَكْتَبِ.,The pen is on the desk.
+ك-ت-ب,writing,مَكْتَبَة,maktaba,"library, bookshop",place,أَذْهَبُ إِلَى الْمَكْتَبَةِ كُلَّ يَوْمٍ.,I go to the library every day.
+ك-ت-ب,writing,مَكْتُوب,maktūb,written; letter,result,الِاسْمُ مَكْتُوبٌ عَلَى الْوَرَقَةِ.,The name is written on the paper.
+د-ر-س,studying,دَرَسَ,darasa,he studied,verb,دَرَسَ أَحْمَدُ لِلِامْتِحَانِ.,Ahmad studied for the exam.
+د-ر-س,studying,دَرْس,dars,lesson,noun,الدَّرْسُ الْيَوْمَ سَهْلٌ.,Today's lesson is easy.
+د-ر-س,studying,دِرَاسَة,dirāsa,study,noun,دِرَاسَةُ اللُّغَةِ مُمْتِعَةٌ.,Studying language is enjoyable.
+د-ر-س,studying,مَدْرَسَة,madrasa,school,place,ذَهَبَ الْوَلَدُ إِلَى الْمَدْرَسَةِ.,The boy went to school.
+د-ر-س,studying,مُدَرِّس,mudarris,teacher,doer,الْمُدَرِّسُ يَشْرَحُ الدَّرْسَ.,The teacher explains the lesson.
+ع-ل-م,knowing,عَلِمَ,ʿalima,he knew,verb,عَلِمْتُ الْخَبَرَ أَمْسِ.,I learned the news yesterday.
+ع-ل-م,knowing,عِلْم,ʿilm,"knowledge, science",noun,الْعِلْمُ نُورٌ.,Knowledge is light.
+ع-ل-م,knowing,عَالِم,ʿālim,"scholar, scientist",doer,هُوَ عَالِمٌ كَبِيرٌ فِي الْفِيزِيَاءِ.,He is a great scientist in physics.
+ع-ل-م,knowing,مُعَلِّم,muʿallim,teacher,doer,مُعَلِّمُنَا لَطِيفٌ.,Our teacher is kind.
+ع-ل-م,knowing,تَعْلِيم,taʿlīm,education,noun,التَّعْلِيمُ مُهِمٌّ لِكُلِّ طِفْلٍ.,Education is important for every child.
+ع-ل-م,knowing,مَعْلُومَات,maʿlūmāt,information,noun,أَبْحَثُ عَنْ مَعْلُومَاتٍ جَدِيدَةٍ.,I am looking for new information.
+ف-ت-ح,opening,فَتَحَ,fataḥa,he opened,verb,فَتَحَ الرَّجُلُ الْبَابَ.,The man opened the door.
+ف-ت-ح,opening,فَتْح,fatḥ,opening; conquest,noun,فَتْحُ الْمَتْجَرِ فِي الصَّبَاحِ.,The shop opens in the morning.
+ف-ت-ح,opening,فَاتِح,fātiḥ,opener; light (colour),doer,لَوْنُ الْقَمِيصِ فَاتِحٌ.,The shirt's colour is light.
+ف-ت-ح,opening,مِفْتَاح,miftāḥ,key,tool,أَيْنَ مِفْتَاحُ السَّيَّارَةِ؟,Where is the car key?
+ف-ت-ح,opening,مَفْتُوح,maftūḥ,open,result,الْبَابُ مَفْتُوحٌ.,The door is open.
+خ-ر-ج,going out,خَرَجَ,kharaja,he went out,verb,خَرَجَ أَخِي مِنَ الْبَيْتِ.,My brother left the house.
+خ-ر-ج,going out,خُرُوج,khurūj,"exit, departure",noun,وَقْتُ الْخُرُوجِ الْآنَ.,It is time to leave now.
+خ-ر-ج,going out,خَارِج,khārij,outside,doer,هُمْ يَلْعَبُونَ خَارِجَ الْبَيْتِ.,They are playing outside the house.
+خ-ر-ج,going out,مَخْرَج,makhraj,"exit, way out",place,أَيْنَ الْمَخْرَجُ؟,Where is the exit?
+خ-ر-ج,going out,إِخْرَاج,ikhrāj,taking out; directing (film),noun,إِخْرَاجُ هَذَا الْفِيلْمِ مُمْتَازٌ.,The direction of this film is excellent.
 `;
 const DIAC = /[\u064B-\u0652]/;
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -104,7 +111,7 @@ function toRoots(rows){
   const col=n=>head.indexOf(n);
   const need=["root","word","meaning"];
   const missing=need.filter(n=>col(n)<0);
-  if(missing.length) throw new Error("Missing column(s): "+missing.join(", ")+". Row 1 must be: root, root_meaning, word, transliteration, meaning, type.");
+  if(missing.length) throw new Error("Missing column(s): "+missing.join(", ")+". Row 1 must be: root, root_meaning, word, transliteration, meaning, type, example_ar, example_en.");
   const map=new Map();
   rows.slice(1).forEach(r=>{
     const get=n=>col(n)<0?"":(r[col(n)]||"").trim();
@@ -114,7 +121,7 @@ function toRoots(rows){
     if(!map.has(key)) map.set(key,{letters,meaning:get("root_meaning"),words:[]});
     const root=map.get(key);
     if(!root.meaning) root.meaning=get("root_meaning");
-    root.words.push({ar:get("word"),tr:get("transliteration"),en:get("meaning"),kind:get("type")});
+    root.words.push({ar:get("word"),tr:get("transliteration"),en:get("meaning"),kind:get("type"),exAr:get("example_ar"),exEn:get("example_en")});
   });
   return [...map.values()];
 }
@@ -137,7 +144,7 @@ function render(){
   nav.innerHTML=ROOTS.map((r,n)=>`<button data-tab="r${n}" lang="ar">${label(r)}</button>`).join("")+`<button class="q" data-tab="quiz">Quiz</button>`;
   const html=ROOTS.map((r,n)=>`<section id="r${n}" hidden><div class="root" lang="ar" dir="ltr">${label(r)}</div>`+
     (r.meaning?`<p class="rm">the idea of <em>${esc(r.meaning)}</em></p>`:"")+
-    `<ul>`+r.words.map(w=>`<li><span class="ar" lang="ar" dir="rtl">${highlight(w.ar,r.letters)}</span><span class="tr">${esc(w.tr)}</span><span class="en">${esc(w.en)}</span><span class="kind">${esc(w.kind)}</span></li>`).join("")+`</ul></section>`).join("");
+    `<ul>`+r.words.map(w=>`<li><div class="top"><div class="meta"><span class="en">${esc(w.en)}</span><span class="tr">${esc(w.tr)}</span><span class="kind">${esc(w.kind)}</span></div><span class="ar" lang="ar" dir="rtl">${highlight(w.ar,r.letters)}</span></div>${w.exAr?`<div class="ex"><div class="ex-ar" lang="ar" dir="rtl">${esc(w.exAr)}</div>${w.exEn?`<div class="ex-en">${esc(w.exEn)}</div>`:""}</div>`:""}</li>`).join("")+`</ul></section>`).join("");
   document.getElementById("sections").innerHTML=html;
   nav.querySelectorAll("button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
   show("r0");
